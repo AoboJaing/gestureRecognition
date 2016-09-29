@@ -509,6 +509,66 @@ class VideoProcessor {
               destroyWindow(windowNameInput);
           }
       }
+
+      void runOnce(cv::Mat &frame, cv::Mat &output) {
+
+          // current frame
+          //cv::Mat frame;
+          // output frame
+          //cv::Mat output;
+
+          // if no capture device has been set
+          if (!isOpened())
+              return;
+
+          stop= false;
+
+
+          // read next frame if any
+          if (!readNextFrame(frame))
+              return;
+
+          //cv::flip(frame, frame, 1);
+
+          // display input frame
+          if (windowNameInput.length()!=0)
+              cv::imshow(windowNameInput,frame);
+
+//              std::cout << "capture.get(CV_CAP_PROP_FRAME_WIDTH) : " << capture.get(CV_CAP_PROP_FRAME_WIDTH) << std::endl;
+//              std::cout << "capture.get(CV_CAP_PROP_FRAME_HEIGHT) : " << capture.get(CV_CAP_PROP_FRAME_HEIGHT) << std::endl;
+
+          // calling the process function or method
+          if (callIt) {
+
+            // process the frame
+            if (process)
+                process(frame, output);
+            else if (frameProcessor)
+                frameProcessor->process(frame,output);
+            // increment frame number
+            fnumber++;
+
+          } else {
+
+            output= frame;
+          }
+          int waitkey = cv::waitKey(delay);
+          // write output sequence
+          if (outputFile.length()!=0 && delay>=0 && waitkey==' ')
+              writeNextFrame(output);
+
+          // display output frame
+          if (windowNameOutput.length()!=0)
+              cv::imshow(windowNameOutput,output);
+
+          // introduce a delay
+          if (delay>=0 && waitkey==27)
+            stopIt();
+
+          // check if we should stop
+          if (frameToStop>=0 && getFrameNumber()==frameToStop)
+              stopIt();
+      }
 };
 
 #endif // VIDEOPROCESSOR

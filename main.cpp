@@ -20,9 +20,17 @@ int main()
     // Play the video at the original frame rate
     processor.setDelay(10);
     // Set the frame processor callback function
-    processor.setFrameProcessor(&wristband);
+    //processor.setFrameProcessor(&wristband);
     // Start the process
-    processor.run();
+    //processor.run();
+
+	while(1){
+		cv::Mat img, res;
+		processor.runOnce(img, res);
+		wristband.process(img, res);
+		cv::namedWindow("Show Recogition Result");
+		cv::imshow("Show Recogition Result", res);
+	}
 
     cv::waitKey(0);
     return 0;
