@@ -3,6 +3,7 @@
 #include "videoprocessor.h"
 #include "wristbandTracker.h"
 
+#include<windows.h>
 
 int main()
 {
@@ -32,6 +33,12 @@ int main()
 		cv::imshow("Show Recogition Result", res);
 		//std::cout << "wristbandNumber is " << wristband.wristbandNumber << std::endl;
 		std::cout << wristband.move_x << "\t" << wristband.move_y << "\t" << wristband.move_z << std::endl;
+
+		//get cursor position
+		POINT p;
+        GetCursorPos(&p);
+		std::cout << "cursor position is : x = " << p.x << ", y = " << p.y << std::endl;
+
 	}
 
     cv::waitKey(0);
