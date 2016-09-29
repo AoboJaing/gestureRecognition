@@ -5,6 +5,8 @@
 
 #include<windows.h>
 
+int dataLimiting(int origin, int low, int high);
+
 int main()
 {
 
@@ -25,6 +27,11 @@ int main()
     // Start the process
     //processor.run();
 
+	int aScreenWidth, aScreenHeight;
+	aScreenWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+	aScreenHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	std::cout << "all Screen , Width is " << aScreenWidth << "; Height is " << aScreenHeight << std::endl;
+
 	while(1){
 		cv::Mat img, res;
 		processor.runOnce(img, res);
@@ -39,9 +46,26 @@ int main()
         GetCursorPos(&p);
 		std::cout << "cursor position is : x = " << p.x << ", y = " << p.y << std::endl;
 
+		POINT pTemp;
+		if(wristband.wristbandNumber == 1){
+			// Limiting cursor result coordinate value.
+			pTemp.x = dataLimiting(p.x+wristband.move_x, 0, aScreenWidth);
+			pTemp.y = dataLimiting(p.y-wristband.move_y, 0, aScreenHeight);
+			//Set cursor coordinate.
+			SetCursorPos(pTemp.x, pTemp.y);
+		}
 	}
 
     cv::waitKey(0);
     return 0;
 }
 
+//Data Limiting.
+int dataLimiting(int origin, int low, int high){
+	int res = origin;
+	if(res < low)
+		res = low;
+	else if(res > high)
+		res = high;
+	return res;
+}
