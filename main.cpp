@@ -7,6 +7,8 @@
 
 int dataLimiting(int origin, int low, int high);
 
+int isClick = 0, pastWristbandNumber = 0;
+
 int main()
 {
 
@@ -46,14 +48,34 @@ int main()
         GetCursorPos(&p);
 		std::cout << "cursor position is : x = " << p.x << ", y = " << p.y << std::endl;
 
+		// if not recognition wristhand, continue this circle
+		if(wristband.wristbandNumber == 0)
+			continue;
+
 		POINT pTemp;
-		if(wristband.wristbandNumber == 1){
+		//if recognition wristhand, update cursor.
+		if(wristband.wristbandNumber != 0){
 			// Limiting cursor result coordinate value.
-			pTemp.x = dataLimiting(p.x+wristband.move_x, 0, aScreenWidth);
-			pTemp.y = dataLimiting(p.y-wristband.move_y, 0, aScreenHeight);
+			pTemp.x = dataLimiting(p.x+wristband.move_x, 0+1, aScreenWidth-1);
+			pTemp.y = dataLimiting(p.y-wristband.move_y, 0+1, aScreenHeight-1);
 			//Set cursor coordinate.
 			SetCursorPos(pTemp.x, pTemp.y);
 		}
+		if(wristband.wristbandNumber == 2 && isClick == 0){
+			if(wristband.wristbandNumber == pastWristbandNumber)
+				;
+			else{
+				//mouse left button down
+				isClick = 1;
+				mouse_event(MOUSEEVENTF_LEFTDOWN,pTemp.x,pTemp.y,0,0);
+			}
+		}
+		if(isClick == 1 && wristband.wristbandNumber == 1){
+			//mouse left button up
+			isClick = 0;
+			mouse_event(MOUSEEVENTF_LEFTUP,pTemp.x,pTemp.y,0,0);
+		}
+		pastWristbandNumber = wristband.wristbandNumber;
 	}
 
     cv::waitKey(0);
@@ -69,3 +91,5 @@ int dataLimiting(int origin, int low, int high){
 		res = high;
 	return res;
 }
+
+
