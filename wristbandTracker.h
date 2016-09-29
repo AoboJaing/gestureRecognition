@@ -187,7 +187,7 @@ private:
             ith++;
         }
         (this->wristbandNumber) = wrist_num;
-        std::cout << "wristbandNumber is " << wristbandNumber << std::endl;
+        //std::cout << "wristbandNumber is " << wristbandNumber << std::endl;
     }
 
     string itoa(int i){
@@ -672,7 +672,7 @@ private:
     void drawControlers(cv::Mat &img){
         switch(this->wristbandNumber){
         case 0:
-            std::cout << "No Wristband" << std::endl;
+            //std::cout << "No Wristband" << std::endl;
             break;
         case 1:{
             cv::Point point;
@@ -699,7 +699,7 @@ private:
         }
             break;
         default:
-            std::cout << "Error" << std::endl;
+            //std::cout << "Error" << std::endl;
             break;
         }
     }

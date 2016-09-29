@@ -30,6 +30,8 @@ int main()
 		wristband.process(img, res);
 		cv::namedWindow("Show Recogition Result");
 		cv::imshow("Show Recogition Result", res);
+		//std::cout << "wristbandNumber is " << wristband.wristbandNumber << std::endl;
+		std::cout << wristband.move_x << "\t" << wristband.move_y << "\t" << wristband.move_z << std::endl;
 	}
 
     cv::waitKey(0);
