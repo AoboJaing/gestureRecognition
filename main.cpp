@@ -6,8 +6,15 @@
 #include<windows.h>
 
 int dataLimiting(int origin, int low, int high);
+// get now handwrist location - past handwrist location = slope
+template<class T>
+T getSlope(T past, T now);
 
 int isClick = 0, pastWristbandNumber = 0;
+
+float handSlopeX, handSlopeY;
+float handPastOffsetX, handPastOffsetY;
+bool firstHandOffset;
 
 int main()
 {
@@ -49,17 +56,32 @@ int main()
 		std::cout << "cursor position is : x = " << p.x << ", y = " << p.y << std::endl;
 
 		// if not recognition wristhand, continue this circle
-		if(wristband.wristbandNumber == 0)
+		if(wristband.wristbandNumber == 0){
+			//set have first hand offset is true.
+			firstHandOffset = true;
 			continue;
-
+		}
 		POINT pTemp;
 		//if recognition wristhand, update cursor.
 		if(wristband.wristbandNumber != 0){
+			//if the time is first have hand offset value, update hand pasr offset value. 
+			if(firstHandOffset == true){
+				firstHandOffset = false;
+				handPastOffsetX = wristband.move_x;
+				handPastOffsetY = wristband.move_y;
+			}
+			// get hand x,y offset's slope.
+			handSlopeX = getSlope<float>(handPastOffsetX, wristband.move_x);
+			handSlopeY = getSlope<float>(handPastOffsetY, wristband.move_y);
 			// Limiting cursor result coordinate value.
-			pTemp.x = dataLimiting(p.x+wristband.move_x, 0+1, aScreenWidth-1);
-			pTemp.y = dataLimiting(p.y-wristband.move_y, 0+1, aScreenHeight-1);
+			pTemp.x = dataLimiting(p.x+handSlopeX, 0+1, aScreenWidth-1);
+			pTemp.y = dataLimiting(p.y-handSlopeY, 0+1, aScreenHeight-1);
 			//Set cursor coordinate.
 			SetCursorPos(pTemp.x, pTemp.y);
+			//udate hand past offset.
+			handPastOffsetX = wristband.move_x;
+			handPastOffsetY = wristband.move_y;
+
 		}
 		if(wristband.wristbandNumber == 2 && isClick == 0){
 			if(wristband.wristbandNumber == pastWristbandNumber)
@@ -74,6 +96,7 @@ int main()
 			//mouse left button up
 			isClick = 0;
 			mouse_event(MOUSEEVENTF_LEFTUP,pTemp.x,pTemp.y,0,0);
+			//http://keleyi.com/a/bjac/2ua08g4c.htm
 		}
 		pastWristbandNumber = wristband.wristbandNumber;
 	}
@@ -90,6 +113,12 @@ int dataLimiting(int origin, int low, int high){
 	else if(res > high)
 		res = high;
 	return res;
+}
+
+// get now handwrist location - past handwrist location = slope
+template<class T>
+T getSlope(T past, T now){
+	return now - past;
 }
 
 
